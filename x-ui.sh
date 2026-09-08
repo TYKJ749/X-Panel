@@ -2,11 +2,10 @@
 
 red='\033[0;31m'
 green='\033[0;32m'
-blue='\033[0;34m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
-#Add some basic function here
+# Add some basic function here
 function LOGD() {
     echo -e "${yellow}[DEG] $* ${plain}"
 }
@@ -37,11 +36,13 @@ fi
 echo -e "——————————————————————"
 echo -e "当前服务器的操作系统为:${red} $release${plain}"
 echo ""
-xui_version=$(/usr/local/x-ui/x-ui -v)
-last_version=$(curl -Ls "https://api.github.com/repos/xeefei/x-panel/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-echo -e "${green}当前代理面板的版本为: ${red}〔X-Panel面板〕v${xui_version}${plain}"
+xui_version=$(/usr/local/x-ui/x-ui -v 2>/dev/null)
+if [[ -z "$xui_version" ]]; then
+    echo -e "${red}未检测到已安装的面板${plain}"
+else
+    echo -e "${green}当前面板版本: ${red}v${xui_version}${plain}"
+fi
 echo ""
-echo -e "${yellow}〔X-Panel面板〕最新版为---------->>> ${last_version}${plain}"
 
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
@@ -53,22 +54,18 @@ elif [[ "${release}" == "ubuntu" ]]; then
     if [[ ${os_version} -lt 20 ]]; then
         echo -e "${red} 请使用 Ubuntu 20 或更高版本!${plain}\n" && exit 1
     fi
-
 elif [[ "${release}" == "fedora" ]]; then
     if [[ ${os_version} -lt 36 ]]; then
         echo -e "${red} 请使用 Fedora 36 或更高版本!${plain}\n" && exit 1
     fi
-
 elif [[ "${release}" == "debian" ]]; then
     if [[ ${os_version} -lt 11 ]]; then
         echo -e "${red} 请使用 Debian 11 或更高版本 ${plain}\n" && exit 1
     fi
-
 elif [[ "${release}" == "almalinux" ]]; then
     if [[ ${os_version} -lt 9 ]]; then
         echo -e "${red} 请使用 AlmaLinux 9 或更高版本 ${plain}\n" && exit 1
     fi
-
 elif [[ "${release}" == "rocky" ]]; then
     if [[ ${os_version} -lt 9 ]]; then
         echo -e "${red} 请使用 RockyLinux 9 或更高版本 ${plain}\n" && exit 1
@@ -95,7 +92,6 @@ else
     echo "- CentOS 8+"
     echo "- Fedora 36+"
     echo "- Arch Linux"
-    echo "- Parch Linux"
     echo "- Manjaro"
     echo "- Armbian"
     echo "- Alpine Linux"
@@ -104,7 +100,6 @@ else
     echo "- Oracle Linux 8+"
     echo "- OpenSUSE Tumbleweed"
     exit 1
-
 fi
 
 # Declare Variables
@@ -143,7 +138,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/xeefei/x-panel/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -162,7 +157,7 @@ update() {
         fi
         return 0
     fi
-    bash <(curl -Ls https://raw.githubusercontent.com/xeefei/x-panel/main/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh)
     if [[ $? == 0 ]]; then
         LOGI "更新完成，面板已自动重启"
         exit 0
@@ -180,7 +175,7 @@ update_menu() {
         return 0
     fi
     
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/xeefei/x-panel/main/x-ui.sh
+    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/TYKJ749/X-Panel/main/x-ui.sh
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
     
@@ -202,9 +197,8 @@ custom_version() {
         exit 1
     fi
 
-    download_link="https://raw.githubusercontent.com/xeefei/x-panel/master/install.sh"
+    download_link="https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh"
 
-    # Use the entered panel version in the download link
     install_command="bash <(curl -Ls $download_link) v$panel_version"
 
     echo "下载并安装面板版本 $panel_version..."
@@ -213,7 +207,7 @@ custom_version() {
 
 # Function to handle the deletion of the script file
 delete_script() {
-    rm "$0"  # Remove the script file itself
+    rm "$0"
     exit 1
 }
 
@@ -236,9 +230,8 @@ uninstall() {
     echo ""
     echo -e "卸载成功\n"
     echo "如果您需要再次安装此面板，可以使用以下命令:"
-    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/xeefei/x-panel/master/install.sh)${plain}"
+    echo -e "${green}bash <(curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh)${plain}"
     echo ""
-    # Trap the SIGTERM signal
     trap delete_script SIGTERM
     delete_script
 }
@@ -260,7 +253,7 @@ reset_user() {
     echo -e "面板登录用户名已重置为：${green} ${config_account} ${plain}"
     echo -e "面板登录密码已重置为：${green} ${config_password} ${plain}"
     echo -e "${yellow} 面板 Secret Token 已禁用 ${plain}"
-    echo -e "${green} 请使用新的登录用户名和密码访问 X-Panel 面板。也请记住它们！${plain}"
+    echo -e "${green} 请使用新的登录用户名和密码访问面板。也请记住它们！${plain}"
     confirm_restart
 }
 
@@ -273,18 +266,15 @@ gen_random_string() {
 reset_webbasepath() {
     echo -e "${yellow}修改访问路径${plain}"
     
-    # Prompt user to set a new web base path
     read -rp "请设置新的访问路径（若回车默认或输入y则为随机路径）: " config_webBasePath
     
     if [[ $config_webBasePath == "y" ]]; then
         config_webBasePath=$(gen_random_string 18)
     fi
     
-    # Apply the new web base path setting
     /usr/local/x-ui/x-ui setting -webBasePath "${config_webBasePath}" >/dev/null 2>&1
     systemctl restart x-ui
     
-    # Display confirmation message
     echo -e "面板访问路径已重置为: ${green}${config_webBasePath}${plain}"
     echo -e "${green}请使用新的路径登录访问面板${plain}"
 }
@@ -311,7 +301,6 @@ check_config() {
     echo -e "${info}${plain}"
     echo ""
     
-    # 获取 IPv4 和 IPv6 地址
     v4=$(curl -s4m8 http://ip.sb -k)
     v6=$(curl -s6m8 http://ip.sb -k)
     local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath（访问路径）: .+' | awk '{print $2}') 
@@ -333,7 +322,6 @@ check_config() {
         echo -e "${green}------->>>>请按照下述方法设置〔ssh转发〕<<<<-------${plain}"
         echo ""
 
-        # 检查 IP 并输出相应的 SSH 和浏览器访问信息
         if [[ -z $v4 ]]; then
             echo -e "${green}1、本地电脑客户端转发命令：${plain} ${blue}ssh  -L [::]:15208:127.0.0.1:${existing_port}${blue} root@[$v6]${plain}"
             echo ""
@@ -341,9 +329,9 @@ check_config() {
             echo ""
             echo -e "${green}3、请在终端中成功输入服务器的〔root密码〕，注意区分大小写，用以上命令进行转发${plain}"
             echo ""
-            echo -e "${green}4、请在浏览器地址栏复制${plain} ${blue}[::1]:15208${existing_webBasePath}${plain} ${green}进入〔X-Panel面板〕登录界面"
+            echo -e "${green}4、请在浏览器地址栏复制${plain} ${blue}[::1]:15208${existing_webBasePath}${plain} ${green}进入面板登录界面"
             echo ""
-            echo -e "${red}注意：若不使用〔ssh转发〕请为X-Panel面板配置安装证书再行登录管理后台${plain}"
+            echo -e "${red}注意：若不使用〔ssh转发〕请为面板配置安装证书再行登录管理后台${plain}"
         elif [[ -n $v4 && -n $v6 ]]; then
             echo -e "${green}1、本地电脑客户端转发命令：${plain} ${blue}ssh -L 15208:127.0.0.1:${existing_port}${blue} root@$v4${plain} ${yellow}或者 ${blue}ssh  -L [::]:15208:127.0.0.1:${existing_port}${blue} root@[$v6]${plain}"
             echo ""
@@ -351,9 +339,9 @@ check_config() {
             echo ""
             echo -e "${green}3、请在终端中成功输入服务器的〔root密码〕，注意区分大小写，用以上命令进行转发${plain}"
             echo ""
-            echo -e "${green}4、请在浏览器地址栏复制${plain} ${blue}127.0.0.1:15208${existing_webBasePath}${plain} ${yellow}或者${plain} ${blue}[::1]:15208${existing_webBasePath}${plain} ${green}进入〔X-Panel面板〕登录界面"
+            echo -e "${green}4、请在浏览器地址栏复制${plain} ${blue}127.0.0.1:15208${existing_webBasePath}${plain} ${yellow}或者${plain} ${blue}[::1]:15208${existing_webBasePath}${plain} ${green}进入面板登录界面"
             echo ""
-            echo -e "${red}注意：若不使用〔ssh转发〕请为X-Panel面板配置安装证书再行登录管理后台${plain}"
+            echo -e "${red}注意：若不使用〔ssh转发〕请为面板配置安装证书再行登录管理后台${plain}"
         else
             echo -e "${green}1、本地电脑客户端转发命令：${plain} ${blue}ssh -L 15208:127.0.0.1:${existing_port}${blue} root@$v4${plain}"
             echo ""
@@ -361,9 +349,9 @@ check_config() {
             echo ""
             echo -e "${green}3、请在终端中成功输入服务器的〔root密码〕，注意区分大小写，用以上命令进行转发${plain}"
             echo ""
-            echo -e "${green}4、请在浏览器地址栏复制${plain} ${blue}127.0.0.1:15208${existing_webBasePath}${plain} ${green}进入〔X-Panel面板〕登录界面"
+            echo -e "${green}4、请在浏览器地址栏复制${plain} ${blue}127.0.0.1:15208${existing_webBasePath}${plain} ${green}进入面板登录界面"
             echo ""
-            echo -e "${red}注意：若不使用〔ssh转发〕请为X-Panel面板配置安装证书再行登录管理后台${plain}"
+            echo -e "${red}注意：若不使用〔ssh转发〕请为面板配置安装证书再行登录管理后台${plain}"
             echo ""
         fi
     fi
@@ -391,7 +379,7 @@ start() {
         sleep 2
         check_status
         if [[ $? == 0 ]]; then
-            LOGI "X-Panel 已成功启动"
+            LOGI "面板已成功启动"
         else
             LOGE "面板启动失败，可能是启动时间超过两秒，请稍后查看日志信息"
         fi
@@ -412,7 +400,7 @@ stop() {
         sleep 2
         check_status
         if [[ $? == 1 ]]; then
-            LOGI "X-Panel 和 Xray 已成功关闭"
+            LOGI "面板和 Xray 已成功关闭"
         else
             LOGE "面板关闭失败，可能是停止时间超过两秒，请稍后查看日志信息"
         fi
@@ -428,7 +416,7 @@ restart() {
     sleep 2
     check_status
     if [[ $? == 0 ]]; then
-        LOGI "X-Panel 和 Xray 已成功重启"
+        LOGI "面板和 Xray 已成功重启"
     else
         LOGE "面板重启失败，可能是启动时间超过两秒，请稍后查看日志信息"
     fi
@@ -502,14 +490,11 @@ disable_bbr() {
         exit 0
     fi
 
-    # Replace BBR with CUBIC configurations
     sed -i 's/net.core.default_qdisc=fq/net.core.default_qdisc=pfifo_fast/' /etc/sysctl.conf
     sed -i 's/net.ipv4.tcp_congestion_control=bbr/net.ipv4.tcp_congestion_control=cubic/' /etc/sysctl.conf
 
-    # Apply changes
     sysctl -p
 
-    # Verify that BBR is replaced with CUBIC
     if [[ $(sysctl net.ipv4.tcp_congestion_control | awk '{print $3}') == "cubic" ]]; then
         echo -e "${green}BBR 已成功替换为 CUBIC${plain}"
     else
@@ -523,7 +508,6 @@ enable_bbr() {
         exit 0
     fi
 
-    # Check the OS and install necessary packages
     case "${release}" in
     ubuntu | debian | armbian)
         apt-get update && apt-get install -yqq --no-install-recommends ca-certificates
@@ -543,14 +527,11 @@ enable_bbr() {
         ;;
     esac
 
-    # Enable BBR
     echo "net.core.default_qdisc=fq" | tee -a /etc/sysctl.conf
     echo "net.ipv4.tcp_congestion_control=bbr" | tee -a /etc/sysctl.conf
 
-    # Apply changes
     sysctl -p
 
-    # Verify that BBR is enabled
     if [[ $(sysctl net.ipv4.tcp_congestion_control | awk '{print $3}') == "bbr" ]]; then
         echo -e "${green}BBR 已成功启用${plain}"
     else
@@ -559,7 +540,7 @@ enable_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/x-ui -N --no-check-certificate https://github.com/xeefei/x-panel/raw/main/x-ui.sh
+    wget -O /usr/bin/x-ui -N --no-check-certificate https://raw.githubusercontent.com/TYKJ749/X-Panel/main/x-ui.sh
     if [[ $? != 0 ]]; then
         echo ""
         LOGE "下载脚本失败，请检查机器是否可以连接至 GitHub"
@@ -701,37 +682,28 @@ open_ports() {
         echo "ufw 防火墙已安装"
     fi
 
-    # Check if the firewall is inactive
     if ufw status | grep -q "Status: active"; then
         echo "防火墙已经激活"
     else
-        # Open the necessary ports
         ufw allow ssh
         ufw allow http
         ufw allow https
         ufw allow 13688/tcp
-
-        # Enable the firewall
         ufw --force enable
     fi
 
-    # Prompt the user to enter a list of ports
     read -p "输入您要打开的端口（例如 80,443,13688 或端口范围 400-500): " ports
 
-    # Check if the input is valid
     if ! [[ $ports =~ ^([0-9]+|[0-9]+-[0-9]+)(,([0-9]+|[0-9]+-[0-9]+))*$ ]]; then
         echo "错误：输入无效。请输入以英文逗号分隔的端口列表或端口范围（例如 80,443,13688 或 400-500)" >&2
         exit 1
     fi
 
-    # Open the specified ports using ufw
     IFS=',' read -ra PORT_LIST <<<"$ports"
     for port in "${PORT_LIST[@]}"; do
         if [[ $port == *-* ]]; then
-            # Split the range into start and end ports
             start_port=$(echo $port | cut -d'-' -f1)
             end_port=$(echo $port | cut -d'-' -f2)
-            # Loop through the range and open each port
             for ((i = start_port; i <= end_port; i++)); do
                 ufw allow $i
             done
@@ -740,28 +712,22 @@ open_ports() {
         fi
     done
 
-    # Confirm that the ports are open
     ufw status | grep $ports
 }
 
 delete_ports() {
-    # Prompt the user to enter the ports they want to delete
     read -p "输入要删除的端口（例如 80,443,13688 或范围 400-500): " ports
 
-    # Check if the input is valid
     if ! [[ $ports =~ ^([0-9]+|[0-9]+-[0-9]+)(,([0-9]+|[0-9]+-[0-9]+))*$ ]]; then
         echo "错误：输入无效。请输入以英文逗号分隔的端口列表或端口范围（例如 80,443,13688 或 400-500)" >&2
         exit 1
     fi
 
-    # Delete the specified ports using ufw
     IFS=',' read -ra PORT_LIST <<<"$ports"
     for port in "${PORT_LIST[@]}"; do
         if [[ $port == *-* ]]; then
-            # Split the range into start and end ports
             start_port=$(echo $port | cut -d'-' -f1)
             end_port=$(echo $port | cut -d'-' -f2)
-            # Loop through the range and delete each port
             for ((i = start_port; i <= end_port; i++)); do
                 ufw delete allow $i
             done
@@ -770,7 +736,6 @@ delete_ports() {
         fi
     done
 
-    # Confirm that the ports are deleted
     echo "删除指定端口:"
     ufw status | grep $ports
 }
@@ -800,14 +765,13 @@ update_geo() {
 }
 
 install_acme() { 
-    # 检查是否已安装 acme.sh
     if command -v ~/.acme.sh/acme.sh &>/dev/null; then 
         LOGI "acme.sh 已经安装。" 
         return 0 
     fi 
  
     LOGI "正在安装 acme.sh..." 
-    cd ~ || return 1 # 确保可以切换到主目录
+    cd ~ || return 1
  
     curl -s https://get.acme.sh | sh 
     if [ $? -ne 0 ]; then 
@@ -820,7 +784,6 @@ install_acme() {
     return 0 
 }
 
-# 【中文注释】：“备用方式申请证书”函数
 ssl_cert_issue_standalone_embedded() {
     local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath（访问路径）: .+' | awk '{print $2}')
     local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port（端口号）: .+' | awk '{print $2}')
@@ -830,7 +793,6 @@ ssl_cert_issue_standalone_embedded() {
     echo -e "${yellow}说明：此模式使用 80 端口申请证书，成功率高，但需要占用 80 端口。${plain}"
     echo ""
 
-    # --- 1. 用户输入信息 ---
     read -rp "请输入域名: " DOMAIN
     if [ -z "$DOMAIN" ]; then
         LOGE "域名不能为空"
@@ -860,7 +822,6 @@ ssl_cert_issue_standalone_embedded() {
         *) echo "❌ 无效选项"; return 1 ;;
     esac
 
-    # --- 2. 防火墙与端口处理  ---
     echo ""
     echo -e "${yellow}注意：Standalone 模式必须使用 80 端口。${plain}"
     echo ""
@@ -874,7 +835,6 @@ ssl_cert_issue_standalone_embedded() {
     echo ""
     read -rp "输入选项（1-3）：" FIREWALL_OPTION
 
-    # 检测系统类型
     if [[ -f /etc/os-release ]]; then
         source /etc/os-release
         OS=$ID
@@ -882,7 +842,6 @@ ssl_cert_issue_standalone_embedded() {
         echo "❌ 无法识别操作系统，跳过依赖安装优化。"
     fi
 
-    # 执行防火墙操作
     if [ "$FIREWALL_OPTION" -eq 1 ]; then
         LOGI "正在尝试关闭防火墙..."
         if command -v ufw >/dev/null 2>&1; then
@@ -901,7 +860,6 @@ ssl_cert_issue_standalone_embedded() {
         fi
     fi
 
-    # --- 3. 安装依赖 (socat 是 standalone 模式必须的) ---
     LOGI "正在检查并安装必要依赖 (socat)..."
     case $OS in
         ubuntu|debian)
@@ -915,7 +873,6 @@ ssl_cert_issue_standalone_embedded() {
             sudo systemctl enable crond
             ;;
         *)
-            # 其他系统尝试通用安装
             if ! command -v socat >/dev/null 2>&1; then
                 echo "❌ 无法识别系统包管理器，请手动安装 socat。"
                 return 1
@@ -923,7 +880,6 @@ ssl_cert_issue_standalone_embedded() {
             ;;
     esac
 
-    # --- 4. 安装/检查 acme.sh ---
     if ! command -v ~/.acme.sh/acme.sh >/dev/null 2>&1; then
         LOGI "未检测到 acme.sh，正在安装..."
         curl https://get.acme.sh | sh
@@ -937,26 +893,20 @@ ssl_cert_issue_standalone_embedded() {
         LOGI "acme.sh 已安装。"
     fi
 
-    # --- 5. 注册账户 ---
     LOGI "正在注册 ACME 账户..."
     ~/.acme.sh/acme.sh --register-account -m $EMAIL --server $CA_SERVER
 
-    # --- 6. 申请证书 (Standalone 模式) ---
     LOGI "正在使用 Standalone 模式申请证书 (占用 80 端口)..."
-    # 如果 80 端口被 nginx 或 x-ui 占用，先尝试停止它们
     systemctl stop nginx >/dev/null 2>&1
     systemctl stop x-ui >/dev/null 2>&1
     
     if ! ~/.acme.sh/acme.sh --issue --standalone -d $DOMAIN --server $CA_SERVER --force; then
         LOGE "❌ 证书申请失败！"
         LOGE "请检查：1、域名解析是否正确指向本机 IP。2、80 端口是否开放且未被占用。"
-        # 失败尝试重启 x-ui
         systemctl start x-ui >/dev/null 2>&1
         return 1
     fi
 
-# --- 7. 安装证书到标准路径 ---
-# 直接创建 x-ui 标准目录结构，
     local certPath="/root/cert/${DOMAIN}"
     if [ ! -d "$certPath" ]; then
         mkdir -p "$certPath"
@@ -964,7 +914,6 @@ ssl_cert_issue_standalone_embedded() {
     
     LOGI "申请成功！正在安装证书到: $certPath"
     
-    # x-ui 是系统服务，用 systemctl restart x-ui 更稳妥
     local reloadCmd="systemctl restart x-ui" 
     
     ~/.acme.sh/acme.sh --installcert -d $DOMAIN \
@@ -974,17 +923,14 @@ ssl_cert_issue_standalone_embedded() {
         
     if [ $? -eq 0 ]; then
         LOGI "✅ 证书安装命令执行成功！"
-        # 启用 acme.sh 自动升级
         ~/.acme.sh/acme.sh --upgrade --auto-upgrade
         
-        # --- 8. 自动应用到面板设置 (包含文件检查) ---
         local webCertFile="${certPath}/fullchain.pem"
         local webKeyFile="${certPath}/privkey.pem"
         
-        # === 文件检查判断 ===
         if [[ -f "${webCertFile}" && -f "${webKeyFile}" && -s "${webCertFile}" && -s "${webKeyFile}" ]]; then
             
-            LOGI "检测到证书文件存在且有效，正在应用到 X-Panel 面板..."
+            LOGI "检测到证书文件存在且有效，正在应用到面板..."
             /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
             
             echo -e "${green}恭喜！备用方式证书申请并配置成功！${plain}"
@@ -997,10 +943,7 @@ ssl_cert_issue_standalone_embedded() {
             echo ""
             echo -e "${green}登录访问面板URL: https://${domain}:${existing_port}${green}${existing_webBasePath}${plain}"
             echo ""
-            echo -e "${green}PS：若您要登录访问面板，请复制上面的地址到浏览器打开即可${plain}"
-            echo ""
             
-            # 重启面板以生效
             if command -v restart >/dev/null 2>&1; then
                 restart
             else
@@ -1009,7 +952,6 @@ ssl_cert_issue_standalone_embedded() {
         else
             LOGE "❌ 严重错误：证书安装显示成功，但未找到证书文件或文件为空！"
             LOGE "请检查目录权限或磁盘空间：$certPath"
-            # 恢复 x-ui 运行，避免断联
             systemctl start x-ui >/dev/null 2>&1
             return 1
         fi
@@ -1074,7 +1016,6 @@ ssl_cert_issue_main() {
         ssl_cert_issue_main 
         ;; 
     4) 
-        # 【功能：自定义证书路径】
         local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath（访问路径）: .+' | awk '{print $2}')
         local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port（端口号）: .+' | awk '{print $2}')
         echo ""
@@ -1088,27 +1029,21 @@ ssl_cert_issue_main() {
         echo ""
         read -rp "请输入私钥文件(Key)的绝对路径: " user_key
 
-        # 源文件检查，增加 -s 判断，防止用户上传了空文件
         if [[ -f "$user_cert" && -f "$user_key" && -s "$user_cert" && -s "$user_key" ]]; then
             
-            # 创建标准存放目录
             local certPath="/root/cert/${domain}"
             if [ ! -d "$certPath" ]; then
                 mkdir -p "$certPath"
             fi
             
-            # 复制文件到 X-Panel 标准目录，统一命名
-            # 使用 \cp -f 强制覆盖，不提示
             \cp -f "$user_cert" "${certPath}/fullchain.pem"
             \cp -f "$user_key" "${certPath}/privkey.pem"
             
             local webCertFile="${certPath}/fullchain.pem"
             local webKeyFile="${certPath}/privkey.pem"
 
-            # 检查复制后的目标文件是否存在且不为空
             if [[ -f "${webCertFile}" && -f "${webKeyFile}" && -s "${webCertFile}" && -s "${webKeyFile}" ]]; then
                 
-                # 应用到面板设置
                 /usr/local/x-ui/x-ui cert -webCert "$webCertFile" -webCertKey "$webKeyFile"
                 
                 echo -e "${green}已成功导入证书并设置应用到面板路径！${plain}"
@@ -1121,13 +1056,9 @@ ssl_cert_issue_main() {
                 echo ""
                 echo -e "${green}登录访问面板URL: https://${domain}:${existing_port}${green}${existing_webBasePath}${plain}"
                 echo ""
-                echo -e "${green}PS：若您要登录访问面板，请复制上面的地址到浏览器打开即可${plain}"
-                echo ""
                 
-                # 只有文件确认无误，才执行重启
                 restart
             else
-                # 复制失败的处理
                 LOGE "❌ 严重错误：文件复制失败或目标文件为空！"
                 echo "可能是磁盘空间不足或权限问题，面板设置未更改。"
             fi
@@ -1139,11 +1070,9 @@ ssl_cert_issue_main() {
             echo "私钥路径: $user_key"
         fi
         
-        # 返回主菜单
         ssl_cert_issue_main
         ;;
     5)
-        # 【功能：备用方式申请证书】
         ssl_cert_issue_standalone_embedded
         ssl_cert_issue_main
         ;;
@@ -1210,7 +1139,6 @@ ssl_cert_issue_main() {
 ssl_cert_issue() {
     local existing_webBasePath=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'webBasePath（访问路径）: .+' | awk '{print $2}')
     local existing_port=$(/usr/local/x-ui/x-ui setting -show true | grep -Eo 'port（端口号）: .+' | awk '{print $2}')
-    # 首先检查 acme.sh
     echo ""
     if ! command -v ~/.acme.sh/acme.sh &>/dev/null; then
         echo "未找到 acme.sh，将进行安装"
@@ -1221,22 +1149,17 @@ ssl_cert_issue() {
         fi
     fi
 
-    # 安装 socat 和 dnsutils/bind-utils (用于 dig)
     case "${release}" in
     ubuntu | debian | armbian)
-        # 添加了 dnsutils 用于 dig 命令
         apt update && apt install socat dnsutils -y
         ;;
     centos | rhel | almalinux | rocky | ol)
-        # 添加了 bind-utils 用于 dig 命令
         yum -y update && yum -y install socat bind-utils
         ;;
     fedora | amzn | virtuozzo)
-        # 添加了 bind-utils 用于 dig 命令
         dnf -y update && dnf -y install socat bind-utils
         ;;
     arch | manjaro | parch)
-        # 添加了 dnsutils 用于 dig 命令
         pacman -Sy --noconfirm socat dnsutils
         ;;
     *)
@@ -1254,15 +1177,12 @@ ssl_cert_issue() {
         echo ""
     fi
 
-    # 在这里获取域名，我们需要验证它
     local domain=""
-    # 强制从终端读取输入，避免被管道跳过
     read -rp "请输入您的域名: " domain </dev/tty
     echo ""
     LOGD "您的域名是: ${domain}, 正在检查..."
     echo ""
 
-    # --- 新增：域名解析验证 ---
     LOGD "正在获取本机公共 IP..."
     echo ""
     public_ip=$(curl -s4m8 http://ip.sb -k)
@@ -1275,7 +1195,6 @@ ssl_cert_issue() {
     echo ""
 
     LOGD "正在查询域名 ${domain} 的 DNS ----->>> A 记录..."
-    # 确保只获取A记录，并取第一个
     domain_ip=$(dig +short $domain A | head -n 1)
 
     if [ -z "$domain_ip" ]; then
@@ -1303,7 +1222,6 @@ ssl_cert_issue() {
     LOGI "域名解析验证成功，继续执行证书申请......"
     echo ""
 
-    # 检查是否已存在证书
     local currentCert=$(~/.acme.sh/acme.sh --list | tail -1 | awk '{print $1}')
     if [ "${currentCert}" == "${domain}" ]; then
         local certInfo=$(~/.acme.sh/acme.sh --list)
@@ -1314,7 +1232,6 @@ ssl_cert_issue() {
         LOGI "您的域名现在可以签发证书了......"
     fi
 
-    # 为证书创建一个目录
     echo ""
     certPath="/root/cert/${domain}"
     if [ ! -d "$certPath" ]; then
@@ -1324,7 +1241,6 @@ ssl_cert_issue() {
         mkdir -p "$certPath"
     fi
 
-    # 获取独立服务器的端口号
     local WebPort=80
     read -rp "请选择要使用的端口 (默认为 80): " WebPort
     if [[ ${WebPort} -gt 65535 || ${WebPort} -lt 1 ]]; then
@@ -1333,7 +1249,6 @@ ssl_cert_issue() {
     fi
     LOGI "将使用端口: ${WebPort} 来签发证书。请确保此端口已开放。"
 
-    # 签发证书
     echo ""
     ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
     ~/.acme.sh/acme.sh --issue -d ${domain} --listen-v6 --standalone --httpport ${WebPort} --force
@@ -1345,12 +1260,10 @@ ssl_cert_issue() {
         LOGE "签发证书成功，正在安装证书..."
     fi
 
-    # --- 自动设置 reloadCmd ---
     echo ""
     reloadCmd="systemctl restart x-ui"
     LOGI "ACME 的 --reloadcmd 已自动设置为: ${yellow}systemctl restart x-ui"
     
-    # 安装证书
     echo ""
     ~/.acme.sh/acme.sh --installcert -d ${domain} \
         --key-file /root/cert/${domain}/privkey.pem \
@@ -1366,7 +1279,6 @@ ssl_cert_issue() {
         LOGI "安装证书成功，正在启用自动续订..."
     fi
 
-    # 启用自动续订
     echo ""
     ~/.acme.sh/acme.sh --upgrade --auto-upgrade
     if [ $? -ne 0 ]; then
@@ -1380,7 +1292,6 @@ ssl_cert_issue() {
         chmod 755 $certPath/*
     fi
 
-    # ---  自动为面板设置证书路径  ---
     echo ""
     local webCertFile="/root/cert/${domain}/fullchain.pem"
     local webKeyFile="/root/cert/${domain}/privkey.pem"
@@ -1394,8 +1305,6 @@ ssl_cert_issue() {
         LOGI "  - 私钥文件: $webKeyFile"
         echo ""
         echo -e "${green}登录访问面板URL: https://${domain}:${existing_port}${green}${existing_webBasePath}${plain}"
-        echo ""
-        echo -e "${green}PS：若您要登录访问面板，请复制上面的地址到浏览器打开即可${plain}"
         echo ""
         restart
     else
@@ -1424,7 +1333,6 @@ ssl_cert_issue_CF() {
     confirm "您确认信息并希望继续吗？[y/n]" "y"
 
     if [ $? -eq 0 ]; then
-        # 首先检查 acme.sh
         if ! command -v ~/.acme.sh/acme.sh &>/dev/null; then
             echo "未找到 acme.sh。我们将为您安装。"
             install_acme
@@ -1437,24 +1345,19 @@ ssl_cert_issue_CF() {
         CF_Domain=""
 
         LOGD "请设置一个域名："
-        # 强制从终端读取输入
         read -rp "在此输入您的域名: " CF_Domain </dev/tty
         LOGD "您的域名设置为：${CF_Domain}"
 
-        # 设置 Cloudflare API 详细信息
         CF_GlobalKey=""
         CF_AccountEmail=""
         LOGD "请设置 API 密钥："
-        # 强制从终端读取输入
         read -rp "在此输入您的密钥: " CF_GlobalKey </dev/tty
         LOGD "您的 API 密钥是：${CF_GlobalKey}"
 
         LOGD "请设置注册的电子邮箱："
-        # 强制从终端读取输入
         read -rp "在此输入您的电子邮箱: " CF_AccountEmail </dev/tty
         LOGD "您注册的电子邮箱地址是：${CF_AccountEmail}"
 
-        # 将默认 CA 设置为 Let's Encrypt
         ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
         if [ $? -ne 0 ]; then
             LOGE "设置默认 CA 为 Let's Encrypt 失败，脚本正在退出..."
@@ -1464,7 +1367,6 @@ ssl_cert_issue_CF() {
         export CF_Key="${CF_GlobalKey}"
         export CF_Email="${CF_AccountEmail}"
 
-        # 使用 Cloudflare DNS 颁发证书
         echo ""
         ~/.acme.sh/acme.sh --issue --dns dns_cf -d ${CF_Domain} -d *.${CF_Domain} --log --force
         if [ $? -ne 0 ]; then
@@ -1474,7 +1376,6 @@ ssl_cert_issue_CF() {
             LOGI "证书颁发成功，正在安装..."
         fi
         
-        # 为证书创建一个目录
         echo ""
         certPath="/root/cert/${CF_Domain}"
         if [ -d "$certPath" ]; then
@@ -1487,13 +1388,11 @@ ssl_cert_issue_CF() {
             exit 1
         fi
 
-        # --- 自动设置 reloadCmd ---
         echo ""
         reloadCmd="systemctl restart x-ui"
         LOGI "ACME 的 --reloadcmd 已自动设置为: ${yellow}systemctl restart x-ui"
         echo ""
 
-        # 执行“安装证书”流程
         echo ""
         ~/.acme.sh/acme.sh --installcert -d ${CF_Domain} -d *.${CF_Domain} \
             --key-file ${certPath}/privkey.pem \
@@ -1508,7 +1407,6 @@ ssl_cert_issue_CF() {
             LOGI "证书安装成功，正在开启自动更新..."
         fi
 
-        # 启用自动续订
         echo ""
         ~/.acme.sh/acme.sh --upgrade --auto-upgrade
         if [ $? -ne 0 ]; then
@@ -1520,7 +1418,6 @@ ssl_cert_issue_CF() {
             chmod 755 ${certPath}/*
         fi
 
-        # --- 自动为面板设置证书路径 ---
         echo ""
         local webCertFile="${certPath}/fullchain.pem"
         local webKeyFile="${certPath}/privkey.pem"
@@ -1536,9 +1433,7 @@ ssl_cert_issue_CF() {
             echo ""
             echo -e "${green}登录访问面板URL: https://${CF_Domain}:${existing_port}${green}${existing_webBasePath}${plain}"
             echo ""
-            echo -e "${green}PS：若您要登录访问面板，请复制上面的地址到浏览器打开即可${plain}"
-            echo ""
-            restart    # 自动重启面板以应用证书
+            restart
         else
             LOGE "错误：未找到域名的证书或私钥文件: $CF_Domain。"
         fi
@@ -1575,7 +1470,6 @@ warp_cloudflare() {
     esac
 }
 
-# --------- 【订阅转换】模块 ---------- 
 subconverter() {
 echo ""
 echo -e "${green}==============================================="
@@ -1585,7 +1479,6 @@ echo -e "2. 自动调用面板的证书"
 echo -e "3. 自动部署 Sublink 服务"
 echo -e "4. 自动配置 Nginx 反向代理"
 echo -e "5. 可直观在前端页面配置订阅"
-echo -e "作者：〔X-Panel 面板〕专属定制"
 echo -e "===============================================${plain}"
 echo ""
     local existing_cert=$(/usr/local/x-ui/x-ui setting -getCert true | grep -Eo 'cert: .+' | awk '{print $2}')
@@ -1607,12 +1500,8 @@ else
     exit 1
 fi
 
-# --------- 安装/部署sublink服务 ----------
-
 bash <(curl -Ls https://raw.githubusercontent.com/xeefei/sublink/main/install.sh)
 
-
-# --------- 安装 Nginx ----------
 if ! command -v nginx &>/dev/null; then
     echo -e "${yellow}-------------->>>>>>>>未检测到 Nginx，正在安装...${plain}"
     apt update && apt install -y nginx
@@ -1622,22 +1511,18 @@ else
     echo -e "${green}检测到 Nginx 已安装，跳过安装步骤${plain}"
 fi
 
-# --------- 拷贝X-Panel已有证书到 Nginx ----------
 mkdir -p /etc/nginx/ssl
 acme_path="/root/.acme.sh/${domain}_ecc"
 
 cp "${acme_path}/fullchain.cer" "/etc/nginx/ssl/${domain}.cer"
 cp "${acme_path}/${domain}.key" "/etc/nginx/ssl/${domain}.key"
 
-
-# --------- 配置 Nginx 反向代理 ----------
 NGINX_CONF="/etc/nginx/conf.d/sublink.conf"
 cat > $NGINX_CONF <<EOF
 server {
     listen 15268 ssl http2;
     server_name ${domain};
 
-    # 证书路径（从 acme.sh 复制到 /etc/nginx/ssl/ 下）
     ssl_certificate     /etc/nginx/ssl/${domain}.cer;
     ssl_certificate_key /etc/nginx/ssl/${domain}.key;
 
@@ -1655,25 +1540,18 @@ server {
 }
 EOF
 
-# 重载 nginx，让新证书生效
 sleep 1
 systemctl reload nginx
 sleep 2
 
-# --------- 使用 sed 替换 ExecStart 行，添加启动参数 ----------
 sudo sed -i "/^ExecStart=/ s|$| run --port 8000|" "/etc/systemd/system/sublink.service"
-# 重新加载 systemd 守护进程
 sudo systemctl daemon-reload
-# 重启 sublink 服务
 sudo systemctl restart sublink
 
-
-# --------- 开放防火墙端口 ----------
 echo ""
 echo -e "${yellow}请务必手动放行${plain}${red} 8000 和 15268 ${yellow}端口！！${plain}"
 echo ""
 
-# --------- 完成提示 ----------
 echo ""
 echo -e "${green}【订阅转换模块】安装完成！！！${plain}"
 echo ""
@@ -1681,19 +1559,13 @@ echo -e "${green}登录用户名：admin，密码：123456，请进后台自行�
 echo ""
 echo -e "${green}Web 界面访问地址：https://${domain}:15268${plain}"
 echo ""
-echo -e "${green}若要登录前端网页使用【订阅转换】，请直接复制以上地址${plain}"
-echo ""
-echo -e "${green}接下来流程会进入〔X-Panel面板〕x-ui 菜单项${plain}"
 sleep 8
 echo ""
-# --------- 返回菜单 ----------
 show_menu
 }
 
 run_speedtest() {
-    # Check if Speedtest is already installed
     if ! command -v speedtest &>/dev/null; then
-        # If not installed, install it
         local pkg_manager=""
         local speedtest_install_script=""
 
@@ -1720,10 +1592,8 @@ run_speedtest() {
         fi
     fi
 
-    # Run Speedtest
     speedtest
 }
-
 
 iplimit_main() {
     echo -e "\n${green}\t1.${plain} 安装 Fail2ban 并配置 IP 限制"
@@ -1789,7 +1659,6 @@ install_iplimit() {
     if ! command -v fail2ban-client &>/dev/null; then
         echo -e "${green}未安装 Fail2ban。正在安装...!${plain}\n"
 
-        # Check the OS and install necessary packages
         case "${release}" in
         ubuntu)
             apt-get update
@@ -1837,24 +1706,18 @@ install_iplimit() {
 
     echo -e "${green}配置 IP 限制中...${plain}\n"
 
-    # make sure there's no conflict for jail files
     iplimit_remove_conflicts
 
-    # Check if log file exists
     if ! test -f "${iplimit_banned_log_path}"; then
         touch ${iplimit_banned_log_path}
     fi
 
-    # Check if service log file exists so fail2ban won't return error
     if ! test -f "${iplimit_log_path}"; then
         touch ${iplimit_log_path}
     fi
 
-    # Create the iplimit jail files
-    # we didn't pass the bantime here to use the default value
     create_iplimit_jails
 
-    # Launching fail2ban
     if ! systemctl is-active --quiet fail2ban; then
         systemctl start fail2ban
         systemctl enable fail2ban
@@ -1952,13 +1815,10 @@ show_banlog() {
 }
 
 create_iplimit_jails() {
-    # Use default bantime if not passed => 30 minutes
     local bantime="${1:-30}"
 
-    # Uncomment 'allowipv6 = auto' in fail2ban.conf
     sed -i 's/#allowipv6 = auto/allowipv6 = auto/g' /etc/fail2ban/fail2ban.conf
 
-    # On Debian 12+ fail2ban's default backend should be changed to systemd
     if [[  "${release}" == "debian" && ${os_version} -ge 12 ]]; then
         sed -i '0,/action =/s/backend = auto/backend = systemd/' /etc/fail2ban/jail.conf
     fi
@@ -2019,7 +1879,6 @@ iplimit_remove_conflicts() {
     )
 
     for file in "${jail_files[@]}"; do
-        # Check for [3x-ipl] config in jail file then remove it
         if test -f "${file}" && grep -qw '3x-ipl' ${file}; then
             sed -i "/\[3x-ipl\]/,/^$/d" ${file}
             echo -e "${yellow}消除系统环境中 [3x-ipl] 的冲突 (${file})!${plain}\n"
@@ -2029,33 +1888,31 @@ iplimit_remove_conflicts() {
 
 show_usage() {
     echo -e "         ---------------------"
-    echo -e "         |${green}X-Panel 控制菜单用法 ${plain}|${plain}"
-    echo -e "         |  ${yellow}一个更好的面板   ${plain}|${plain}"   
-    echo -e "         | ${yellow}基于Xray Core构建 ${plain}|${plain}"  
+    echo -e "         |${green}TYKJ-Panel 控制菜单 ${plain}|${plain}"
+    echo -e "         |  ${yellow}基于Xray Core构建 ${plain}|${plain}"  
     echo -e "--------------------------------------------"
     echo -e "x-ui              - 进入管理脚本"
-    echo -e "x-ui start        - 启动 X-Panel 面板"
-    echo -e "x-ui stop         - 关闭 X-Panel 面板"
-    echo -e "x-ui restart      - 重启 X-Panel 面板"
-    echo -e "x-ui status       - 查看 X-Panel 状态"
+    echo -e "x-ui start        - 启动面板"
+    echo -e "x-ui stop         - 关闭面板"
+    echo -e "x-ui restart      - 重启面板"
+    echo -e "x-ui status       - 查看面板状态"
     echo -e "x-ui settings     - 查看当前设置信息"
-    echo -e "x-ui enable       - 启用 X-Panel 开机启动"
-    echo -e "x-ui disable      - 禁用 X-Panel 开机启动"
-    echo -e "x-ui log          - 查看 X-Panel 运行日志"
+    echo -e "x-ui enable       - 启用开机启动"
+    echo -e "x-ui disable      - 禁用开机启动"
+    echo -e "x-ui log          - 查看运行日志"
     echo -e "x-ui banlog       - 检查 Fail2ban 禁止日志"
-    echo -e "x-ui update       - 更新 X-Panel 面板"
-    echo -e "x-ui custom       - 自定义 X-Panel 版本"
-    echo -e "x-ui install      - 安装 X-Panel 面板"
-    echo -e "x-ui uninstall    - 卸载 X-Panel 面板"
+    echo -e "x-ui update       - 更新面板"
+    echo -e "x-ui custom       - 自定义版本"
+    echo -e "x-ui install      - 安装面板"
+    echo -e "x-ui uninstall    - 卸载面板"
     echo -e "--------------------------------------------"
 }
 
 show_menu() {
     echo -e "
 ——————————————————————
-  ${green}X-Panel 面板管理脚本${plain}
-  ${yellow}  一个更好的面板${plain}
-  ${yellow} 基于Xray Core构建${plain}
+  ${green}TYKJ-Panel 面板管理脚本${plain}
+  ${yellow}  基于Xray Core构建${plain}
 ——————————————————————
   ${green}0.${plain} 退出脚本
   ${green}1.${plain} 安装面板
@@ -2089,36 +1946,13 @@ show_menu() {
   ${green}24.${plain} Speedtest by Ookla
   ${green}25.${plain} 安装订阅转换 
 ——————————————————————
-  ${green}若在使用过程中有任何问题${plain}
-  ${yellow}请加入〔X-Panel面板〕交流群${plain}
-  ${red}https://t.me/XUI_CN ${yellow}截图进行反馈${plain}
-  ${green}〔X-Panel面板〕项目地址${plain}
-  ${yellow}https://github.com/xeefei/x-panel${plain}
-  ${green}详细〔安装配置〕教程${plain}
-  ${yellow}https://xeefei.blogspot.com/2025/09/x-panel.html${plain}
+  ${green}项目地址${plain}
+  ${yellow}https://github.com/TYKJ749/X-Panel${plain}
+  ${green}交流群${plain}
+  ${yellow}https://t.me/TYwl_857${plain}
+  ${green}作者${plain}
+  ${yellow}https://t.me/TY_749${plain}
 ——————————————————————
-
--------------->>>>>>>赞 助 推 广 区<<<<<<<<-------------------
-
-${green}1、搬瓦工GIA高端线路：${yellow}https://bandwagonhost.com/aff.php?aff=75015${plain}
-
-${green}2、Dmit高端GIA线路：${yellow}https://www.dmit.io/aff.php?aff=9326${plain}
-
-${green}3、Gomami亚太顶尖优化线路：${yellow}https://gomami.io/aff.php?aff=174${plain}
-
-${green}4、ISIF优质亚太优化线路：${yellow}https://cloud.isif.net/login?affiliation_code=333${plain}
-
-${green}5、ZoroCloud全球优质原生家宽&住宅双lSP，跨境首选：${yellow}https://my.zorocloud.com/aff.php?aff=1072${plain}
-
-${green}6、三网直连 IEPL / IPLC 直播流量转发：${yellow}https://idc333.top/#register/BCUZXNELNO${plain}
-
-${green}7、Bagevm优质落地鸡（原生IP全解锁）：${yellow}https://www.bagevm.com/aff.php?aff=754${plain}
-
-${green}8、白丝云〔4837线路〕实惠量大管饱：${yellow}https://cloudsilk.io/aff.php?aff=706${plain}
-
-${green}9、RackNerd极致性价比机器：${yellow}https://my.racknerd.com/aff.php?aff=15268&pid=912${plain}
-
-----------------------------------------------
 "
     show_status
     echo && read -p "请输入选项 [0-25]: " num
