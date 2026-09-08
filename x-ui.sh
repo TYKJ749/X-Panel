@@ -37,12 +37,14 @@ echo -e "——————————————————————"
 echo -e "当前服务器的操作系统为:${red} $release${plain}"
 echo ""
 xui_version=$(/usr/local/x-ui/x-ui -v 2>/dev/null)
-if [[ -z "$xui_version" ]]; then
-    echo -e "${red}未检测到已安装的面板${plain}"
-else
-    echo -e "${green}当前面板版本: ${red}v${xui_version}${plain}"
+last_version=$(curl -Ls "https://api.github.com/repos/TYKJ749/X-Panel/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+if [[ -n "$xui_version" ]]; then
+    echo -e "${green}当前面板版本为: ${red}TYKJ-Panel v${xui_version}${plain}"
 fi
 echo ""
+if [[ -n "$last_version" ]]; then
+    echo -e "${yellow}TYKJ-Panel 最新版为---------->>> ${last_version}${plain}"
+fi
 
 os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
@@ -92,6 +94,7 @@ else
     echo "- CentOS 8+"
     echo "- Fedora 36+"
     echo "- Arch Linux"
+    echo "- Parch Linux"
     echo "- Manjaro"
     echo "- Armbian"
     echo "- Alpine Linux"
@@ -1946,12 +1949,14 @@ show_menu() {
   ${green}24.${plain} Speedtest by Ookla
   ${green}25.${plain} 安装订阅转换 
 ——————————————————————
-  ${green}项目地址${plain}
-  ${yellow}https://github.com/TYKJ749/X-Panel${plain}
-  ${green}交流群${plain}
-  ${yellow}https://t.me/TYwl_857${plain}
-  ${green}作者${plain}
-  ${yellow}https://t.me/TY_749${plain}
+${green}PS：〔天耀科技〕站长：${yellow}https://t.me/TY_749${plain}
+${green}PS：〔天耀科技〕交流群：${yellow}https://t.me/TYwl_857${plain}
+${green}PS：〔天耀科技〕海外商城：${yellow}https://sc.0kle.cc${plain}
+${green}PS：〔天耀科技〕支付平台：${yellow}https://pay.0kle.cc${plain}
+${green}PS：〔天耀科技〕AI中转站：${yellow}https://ai.0kle.cn${plain}
+${green}PS：〔天耀科技〕教程博客：${yellow}https://bk.0kle.cn${plain}
+${green}PS：〔天耀科技〕服务器网站：${yellow}https://idc.0kle.cn${plain}
+${green}项目地址：${yellow}https://github.com/TYKJ749/X-Panel${plain}
 ——————————————————————
 "
     show_status
