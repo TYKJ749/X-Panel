@@ -82,7 +82,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/xeefei/x-panel/master/install.
 
 - 【全新安装】请执行以下脚本：
 ```
-bash <(curl -Ls [https://github.com/TYKJ749/X-Panel/master/install.sh)
+bash <curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh)
 ```
 #### 如果执行了上面的代码但是报错，证明你的系统里面没有curl这个软件，请执行以下命令先安装curl软件，安装curl之后再去执行上面代码，
 ```
@@ -90,7 +90,7 @@ apt update -y&&apt install -y curl&&apt install -y socat
 ```
 
 ```
-VERSION=v26.2.15 && bash <(curl -Ls "https://raw.githubusercontent.com/xeefei/x-panel/$VERSION/install.sh") $VERSION
+VERSION=v26.2.15 && bash <curl -Ls "bash <curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh" $VERSION
 ```
 ------------
 ## 若你的VPS默认有防火墙，请在安装完成之后放行指定端口
