@@ -89,9 +89,6 @@ bash <curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh
 apt update -y&&apt install -y curl&&apt install -y socat
 ```
 
-```
-VERSION=v26.2.15 && bash <curl -Ls "bash <curl -Ls https://raw.githubusercontent.com/TYKJ749/X-Panel/main/install.sh" $VERSION
-```
 ------------
 ## 若你的VPS默认有防火墙，请在安装完成之后放行指定端口
 - 放行【面板登录端口】
