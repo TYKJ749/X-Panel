@@ -18,8 +18,13 @@ confirm_install() {
     echo -e " 欢迎使用 ${yellow}TYKJ-Panel${plain} 一键安装脚本"
     echo -e "${green}======================================================${plain}"
     echo ""
-    echo -e "项目地址：${yellow}https://github.com/TYKJ749/X-Panel${plain}"
-    echo -e "交流群：${yellow}https://t.me/TYwl_857${plain}"
+    echo -e "${green}PS：〔天耀科技〕站长：${yellow}https://t.me/TY_749${plain}"
+    echo -e "${green}PS：〔天耀科技〕交流群：${yellow}https://t.me/TYwl_857${plain}"
+    echo -e "${green}PS：〔天耀科技〕海外商城：${yellow}https://sc.0kle.cc${plain}"
+    echo -e "${green}PS：〔天耀科技〕支付平台：${yellow}https://pay.0kle.cc${plain}"
+    echo -e "${green}PS：〔天耀科技〕AI中转站：${yellow}https://ai.0kle.cn${plain}"
+    echo -e "${green}PS：〔天耀科技〕教程博客：${yellow}https://bk.0kle.cn${plain}"
+    echo -e "${green}PS：〔天耀科技〕服务器网站：${yellow}https://idc.0kle.cn${plain}"
     echo ""
     echo -e "${yellow}即将安装 TYKJ-Panel ...${plain}"
     echo ""
@@ -77,7 +82,7 @@ install_free_version() {
     echo ""
 
     # 从你的 GitHub Releases 获取版本号
-    last_version="X-Panel-26.6.18"
+    last_version="V26.6.18"
 
     # 检查是否已安装
     xui_version=$(/usr/local/x-ui/x-ui -v 2>/dev/null)
@@ -239,7 +244,7 @@ install_free_version() {
         cd /usr/local/
 
         if [ $# == 0 ]; then
-            last_version="X-Panel-26.6.18"
+            last_version="V26.6.18"
             echo ""
             echo -e "-----------------------------------------------------"
             echo -e "${green}--------->>安装 TYKJ-Panel 版本：${yellow}${last_version}${plain}${green}${plain}"
@@ -249,14 +254,14 @@ install_free_version() {
             echo -e "${green}---------------->>>>>>>>>正在下载...${plain}"
             sleep 2
             echo ""
-            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/TYKJ749/X-Panel/releases/download/X-Panel-26.6.18/x-ui-linux-$(arch).tar.gz
+            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/TYKJ749/X-Panel/releases/download/V26.6.18/x-ui-linux-$(arch).tar.gz
             if [[ $? -ne 0 ]]; then
                 echo -e "${red}下载失败，请检查网络连接${plain}"
                 exit 1
             fi
         else
             last_version=$1
-            url="https://github.com/TYKJ749/X-Panel/releases/download/X-Panel-26.6.18/x-ui-linux-$(arch).tar.gz"
+            url="https://github.com/TYKJ749/X-Panel/releases/download/V26.6.18/x-ui-linux-$(arch).tar.gz"
             echo ""
             echo -e "--------------------------------------------"
             echo -e "${green}---------------->>>>安装 TYKJ-Panel $1${plain}"
@@ -351,13 +356,19 @@ install_free_version() {
     echo -e "----------------------------------------------"
     echo ""
     sleep 2
+    echo -e "${green}======================================================${plain}"
     echo -e "${green}安装/更新完成！${plain}"
+    echo -e "${green}======================================================${plain}"
+    echo ""
+    echo -e "${green}PS：〔天耀科技〕站长：${yellow}https://t.me/TY_749${plain}"
+    echo -e "${green}PS：〔天耀科技〕交流群：${yellow}https://t.me/TYwl_857${plain}"
+    echo -e "${green}PS：〔天耀科技〕海外商城：${yellow}https://sc.0kle.cc${plain}"
+    echo -e "${green}PS：〔天耀科技〕支付平台：${yellow}https://pay.0kle.cc${plain}"
+    echo -e "${green}PS：〔天耀科技〕AI中转站：${yellow}https://ai.0kle.cn${plain}"
+    echo -e "${green}PS：〔天耀科技〕教程博客：${yellow}https://bk.0kle.cn${plain}"
+    echo -e "${green}PS：〔天耀科技〕服务器网站：${yellow}https://idc.0kle.cn${plain}"
     echo ""
     echo -e "${green}项目地址：${yellow}https://github.com/TYKJ749/X-Panel${plain}"
-    echo ""
-    echo -e "${green}交流群：${yellow}https://t.me/TYwl_857${plain}"
-    echo ""
-    echo -e "${green}作者：${yellow}https://t.me/TY_749${plain}"
     echo ""
     echo -e "----------------------------------------------"
     echo ""
