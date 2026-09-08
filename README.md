@@ -1,8 +1,4 @@
-<p align="center"><a href="#"><img src="./media/X-Panel.png" alt="Image"></a></p>
-
 **---------------------------------------一个更好的面板 • 基于Xray Core构建------------------------------**
-
-
 [![](https://img.shields.io/github/v/release/xeefei/x-panel.svg?style=for-the-badge)](https://github.com/xeefei/x-panel/releases)
 [![](https://img.shields.io/github/actions/workflow/status/xeefei/x-panel/release.yml.svg?style=for-the-badge)](https://github.com/xeefei/x-panel/actions)
 [![GO Version](https://img.shields.io/github/go-mod/go-version/xeefei/x-panel.svg?style=for-the-badge)](#)
@@ -14,18 +10,6 @@
 > **注意：** 在使用此项目和〔教程〕过程中，若因违反以上声明使用规则而产生的一切后果由使用者自负。
 
 **如果此项目对你有用，请给一个**:star2:
-
-<p align="left">
-  <a href="https://buymeacoffee.com/xeefeiz" target="_blank">
-    <img src="./media/buymeacoffe.png" alt="Image">
-  </a>
-</p>
-
-- “支持项目”赞助地址（USDT）：
-- TRC20 ---->>> `TYQEmQp1P65u9bG7KPehgJdvuokfb72YkZ`
-- Polygon ---->>> `0xd20eBE429c2398793178e015B2ca1Dc42601f3Eb`
-- Solana ---->>> `7qVEZuV98QTDN5qUmsFwvqTSvkYpmLtNf8o1sh1mppwR`
-- BSC/BEP20 ---->>> `0xd20eBE429c2398793178e015B2ca1Dc42601f3Eb`
 
 ## [【天耀科技】交流群：[https://t.me/XUI_CN](https://t.me/XUI_CN](https://t.me/TYwl_857))
 
