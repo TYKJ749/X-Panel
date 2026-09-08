@@ -82,7 +82,7 @@ install_free_version() {
     echo ""
 
     # 从你的 GitHub Releases 获取版本号
-    last_version="V26.6.18"
+    last_version="V26.9.8"
 
     # 检查是否已安装
     xui_version=$(/usr/local/x-ui/x-ui -v 2>/dev/null)
@@ -244,7 +244,7 @@ install_free_version() {
         cd /usr/local/
 
         if [ $# == 0 ]; then
-            last_version="V26.6.18"
+            last_version="V26.9.8"
             echo ""
             echo -e "-----------------------------------------------------"
             echo -e "${green}--------->>安装 TYKJ-Panel 版本：${yellow}${last_version}${plain}${green}${plain}"
@@ -254,14 +254,14 @@ install_free_version() {
             echo -e "${green}---------------->>>>>>>>>正在下载...${plain}"
             sleep 2
             echo ""
-            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/TYKJ749/X-Panel/releases/download/V26.6.18/x-ui-linux-$(arch).tar.gz
+            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/TYKJ749/X-Panel/releases/download/V26.9.8/x-ui-linux-$(arch).tar.gz
             if [[ $? -ne 0 ]]; then
                 echo -e "${red}下载失败，请检查网络连接${plain}"
                 exit 1
             fi
         else
             last_version=$1
-            url="https://github.com/TYKJ749/X-Panel/releases/download/V26.6.18/x-ui-linux-$(arch).tar.gz"
+            url="https://github.com/TYKJ749/X-Panel/releases/download/V26.9.8/x-ui-linux-$(arch).tar.gz"
             echo ""
             echo -e "--------------------------------------------"
             echo -e "${green}---------------->>>>安装 TYKJ-Panel $1${plain}"
