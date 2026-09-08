@@ -10,6 +10,30 @@ plain='\033[0m'
 [[ $EUID -ne 0 ]] && echo -e "${red}致命错误: ${plain} 请使用 root 权限运行此脚本\n" && exit 1
 
 # ----------------------------------------------------------
+# 确认安装
+# ----------------------------------------------------------
+confirm_install() {
+    echo ""
+    echo -e "${green}======================================================${plain}"
+    echo -e " 欢迎使用 ${yellow}TYKJ-Panel${plain} 一键安装脚本"
+    echo -e "${green}======================================================${plain}"
+    echo ""
+    echo -e "项目地址：${yellow}https://github.com/TYKJ749/X-Panel${plain}"
+    echo -e "交流群：${yellow}https://t.me/TYwl_857${plain}"
+    echo ""
+    echo -e "${yellow}即将安装 TYKJ-Panel ...${plain}"
+    echo ""
+    read -p "$(echo -e "${green}是否继续安装？${red}[y/N]${plain}: ")" confirm
+    if [[ "${confirm}" != "y" && "${confirm}" != "Y" ]]; then
+        echo -e "${red}已取消安装${plain}"
+        exit 0
+    fi
+    echo ""
+    echo -e "${green}开始安装...${plain}"
+    sleep 1
+}
+
+# ----------------------------------------------------------
 # 函数：免费版安装逻辑
 # ----------------------------------------------------------
 install_free_version() {
@@ -53,7 +77,7 @@ install_free_version() {
     echo ""
 
     # 从你的 GitHub Releases 获取版本号
-    last_version="db6b3fd"
+    last_version="X-Panel-26.6.18"
 
     # 检查是否已安装
     xui_version=$(/usr/local/x-ui/x-ui -v 2>/dev/null)
@@ -164,7 +188,7 @@ install_free_version() {
     config_after_install() {
         echo -e "${yellow}安装/更新完成！为了您的面板安全，建议修改面板设置${plain}"
         echo ""
-        read -p "$(echo -e "${green}是否修改面板设置？${red}[y/n]${plain}：")" config_confirm
+        read -p "$(echo -e "${green}是否修改面板设置？${red}[y/N]${plain}：")" config_confirm
         if [[ "${config_confirm}" == "y" || "${config_confirm}" == "Y" ]]; then
             read -p "请设置您的用户名: " config_account
             echo -e "${yellow}您的用户名将是: ${config_account}${plain}"
@@ -215,39 +239,33 @@ install_free_version() {
         cd /usr/local/
 
         if [ $# == 0 ]; then
-            last_version="db6b3fd"
+            last_version="X-Panel-26.6.18"
             echo ""
             echo -e "-----------------------------------------------------"
             echo -e "${green}--------->>安装 TYKJ-Panel 版本：${yellow}${last_version}${plain}${green}${plain}"
             echo -e "-----------------------------------------------------"
             echo ""
             sleep 2
-            echo -e "${green}---------------->>>>>>>>>安装进度50%${plain}"
+            echo -e "${green}---------------->>>>>>>>>正在下载...${plain}"
             sleep 2
             echo ""
-            echo -e "${green}---------------->>>>>>>>>>>>>>>>>>>>>安装进度100%${plain}"
-            echo ""
-            sleep 2
-            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/TYKJ749/X-Panel/releases/download/db6b3fd/x-ui-linux-$(arch).tar.gz
+            wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz https://github.com/TYKJ749/X-Panel/releases/download/X-Panel-26.6.18/x-ui-linux-$(arch).tar.gz
             if [[ $? -ne 0 ]]; then
                 echo -e "${red}下载失败，请检查网络连接${plain}"
                 exit 1
             fi
         else
             last_version=$1
-            url="https://github.com/TYKJ749/X-Panel/releases/download/db6b3fd/x-ui-linux-$(arch).tar.gz"
+            url="https://github.com/TYKJ749/X-Panel/releases/download/X-Panel-26.6.18/x-ui-linux-$(arch).tar.gz"
             echo ""
             echo -e "--------------------------------------------"
             echo -e "${green}---------------->>>>安装 TYKJ-Panel $1${plain}"
             echo -e "--------------------------------------------"
             echo ""
             sleep 2
-            echo -e "${green}---------------->>>>>>>>>安装进度50%${plain}"
+            echo -e "${green}---------------->>>>>>>>>正在下载...${plain}"
             sleep 2
             echo ""
-            echo -e "${green}---------------->>>>>>>>>>>>>>>>>>>>>安装进度100%${plain}"
-            echo ""
-            sleep 2
             wget -N --no-check-certificate -O /usr/local/x-ui-linux-$(arch).tar.gz ${url}
             if [[ $? -ne 0 ]]; then
                 echo -e "${red}下载 TYKJ-Panel $1 失败${plain}"
@@ -256,6 +274,7 @@ install_free_version() {
         fi
 
         cp -f x-ui/x-ui.sh /usr/bin/x-ui-temp
+
         if [[ -e /usr/local/x-ui/ ]]; then
             systemctl stop x-ui
             rm /usr/local/x-ui/ -rf
@@ -348,4 +367,5 @@ install_free_version() {
 # 脚本执行入口
 # ----------------------------------------------------------
 clear
+confirm_install
 install_free_version
