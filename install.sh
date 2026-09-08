@@ -255,8 +255,7 @@ install_free_version() {
             fi
         fi
 
-        wget -O /usr/bin/x-ui-temp https://raw.githubusercontent.com/TYKJ749/X-Panel/main/x-ui.sh
-
+        cp -f x-ui/x-ui.sh /usr/bin/x-ui-temp
         if [[ -e /usr/local/x-ui/ ]]; then
             systemctl stop x-ui
             rm /usr/local/x-ui/ -rf
